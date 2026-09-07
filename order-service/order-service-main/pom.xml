@@ -11,5 +11,23 @@
 
     <artifactId>order-service-main</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>test</groupId>
+            <artifactId>order-application-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>test</groupId>
+            <artifactId>order-service-messagin</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>test</groupId>
+            <artifactId>order-service-persistence</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>test</groupId>
+            <artifactId>order-service-restapi</artifactId>
+        </dependency>
 
+    </dependencies>
 </project>

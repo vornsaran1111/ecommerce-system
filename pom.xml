@@ -11,7 +11,9 @@
     <groupId>test</groupId>
     <artifactId>ecommerce-system</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+
     <!--build sub module-->
+
     <packaging>pom</packaging>
     <name>ecommerce-system</name>
     <description>ecommerce-system</description>
@@ -52,6 +54,34 @@
                 <artifactId>order-domain-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>test</groupId>
+                <artifactId>order-application-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>test</groupId>
+                <artifactId>order-service-messagin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>test</groupId>
+                <artifactId>order-service-persistence</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>test</groupId>
+                <artifactId>order-service-restapi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>test</groupId>
+                <artifactId>order-service-main</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
     <dependencies>

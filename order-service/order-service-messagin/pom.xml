@@ -11,4 +11,12 @@
 
     <artifactId>order-service-messagin</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>test</groupId>
+            <artifactId>order-application-service</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
 </project>

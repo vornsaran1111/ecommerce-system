@@ -18,12 +18,50 @@ public class Order extends AggregateRoot<OrderId> {
     private OrderStatus orderStatus;
     private List<String> failureMessages;
 
-    // ============== critical business logic===========//
+    // ============== start critical business logic ===========//
 
     public void validationOrder() {
         validateInitialOrder();
         validateTotalPrice();
         validateItemsPrice();
+    }
+
+    public void initializeOrder() {
+        setId(new OrderId(UUID.randomUUID()));
+        trackingId = new TrackingId(UUID.randomUUID());
+        orderStatus = OrderStatus.PENDING;
+        initializeOrderItems();
+    }
+
+
+    public void pay() {
+        if (orderStatus != OrderStatus.PENDING) {
+            throw new OrderDomainException("Order is not in correct state for pay operation");
+        }
+        orderStatus = OrderStatus.PAID;
+    }
+
+    public void approve() {
+        if (orderStatus != OrderStatus.PAID) {
+            throw new OrderDomainException("Order is not in correct state for approve operation");
+        }
+        orderStatus = OrderStatus.APPROVED;
+    }
+
+    public void initCancel(List<String> failureMessages) {
+        if (orderStatus != OrderStatus.PAID) {
+            throw new OrderDomainException("Order is not in correct state for init cancel operation");
+        }
+        orderStatus = OrderStatus.CANCELLING;
+        updateFailureMessages(failureMessages);
+    }
+
+    public void cancel(List<String> failureMessages) {
+        if (!(orderStatus == OrderStatus.CANCELLING || orderStatus == OrderStatus.PENDING)) {
+            throw new OrderDomainException("Order is not in correct state for cancel operation");
+        }
+        orderStatus = OrderStatus.CANCELLED;
+        updateFailureMessages(failureMessages);
     }
 
     private void validateInitialOrder() {
@@ -60,35 +98,12 @@ public class Order extends AggregateRoot<OrderId> {
         }
     }
 
-    public void initializeOrder() {
-        setId(new OrderId(UUID.randomUUID()));
-        trackingId = new TrackingId(UUID.randomUUID());
-        orderStatus = OrderStatus.PENDING;
-        initializeOrderItems();
-    }
-
     private void initializeOrderItems() {
         int itemCount = 1;
         for (OrderItem orderItem : orderItems) {
             orderItem.initializeOrderItem(super.getId(), new OrderItemId(itemCount++));
         }
     }
-
-
-    public void pay() {
-        if (orderStatus != OrderStatus.PENDING) {
-            throw new OrderDomainException("Order is not in correct state for pay operation");
-        }
-        orderStatus = OrderStatus.PAID;
-    }
-
-    public void approve() {
-        if (orderStatus != OrderStatus.PAID) {
-            throw new OrderDomainException("Order is not in correct state for approve operation");
-        }
-        orderStatus = OrderStatus.APPROVED;
-    }
-
 
     private void updateFailureMessages(List<String> failureMessages) {
         if (failureMessages != null && this.failureMessages != null) {
@@ -102,22 +117,7 @@ public class Order extends AggregateRoot<OrderId> {
         }
     }
 
-    public void initCancel(List<String> failureMessages) {
-        if (orderStatus != OrderStatus.PAID) {
-            throw new OrderDomainException("Order is not in correct state for init cancel operation");
-        }
-        orderStatus = OrderStatus.CANCELLING;
-        updateFailureMessages(failureMessages);
-    }
-
-    public void cancel(List<String> failureMessages) {
-        if (!(orderStatus == OrderStatus.CANCELLING || orderStatus == OrderStatus.PENDING)) {
-            throw new OrderDomainException("Order is not in correct state for cancel operation");
-        }
-        orderStatus = OrderStatus.CANCELLED;
-        updateFailureMessages(failureMessages);
-    }
-
+    // ============== end critical business logic ===========//
 
     public CustomerId getCustomerId() {
         return customerId;
