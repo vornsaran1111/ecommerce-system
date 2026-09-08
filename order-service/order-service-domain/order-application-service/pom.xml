@@ -16,6 +16,10 @@
             <groupId>test</groupId>
             <artifactId>order-domain-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>test</groupId>
+            <artifactId>common-domain</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

@@ -28,6 +28,10 @@
             <groupId>test</groupId>
             <artifactId>order-service-restapi</artifactId>
         </dependency>
+        <dependency>
+            <groupId>test</groupId>
+            <artifactId>order-domain-core</artifactId>
+        </dependency>
 
     </dependencies>
 </project>
