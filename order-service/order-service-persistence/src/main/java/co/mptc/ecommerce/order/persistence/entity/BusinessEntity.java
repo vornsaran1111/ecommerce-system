@@ -1,0 +1,31 @@
+package co.mptc.ecommerce.order.persistence.entity;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.util.UUID;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@IdClass(BusinessIdEntity.class)
+@Entity
+@Table(name = "businesses")
+public class BusinessEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID businessId;
+
+    @Id
+    private UUID productId;
+
+    private Boolean businessActive;
+
+    private String productName;
+    private BigDecimal productPrice;
+
+}

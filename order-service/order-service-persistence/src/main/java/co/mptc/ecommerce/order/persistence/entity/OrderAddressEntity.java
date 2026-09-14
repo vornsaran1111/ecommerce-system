@@ -1,0 +1,26 @@
+package co.mptc.ecommerce.order.persistence.entity;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.UUID;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@Entity
+@Table(name = "order_addresses")
+public class OrderAddressEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private UUID id;
+    private String street;
+    private String postcode;
+    private String city;
+
+    @OneToOne(mappedBy = "orderAddress")
+    private OrderEntity order;
+}
