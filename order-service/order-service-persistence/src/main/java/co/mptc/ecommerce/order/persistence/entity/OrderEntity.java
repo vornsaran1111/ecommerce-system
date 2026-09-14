@@ -1,6 +1,6 @@
 package co.mptc.ecommerce.order.persistence.entity;
 
-import co.mptc.ecommerce.domain.valueObject.OrderStatus;
+import co.mptc.ecommerce.order.domain.valueObject.OrderStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
