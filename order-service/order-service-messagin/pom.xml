@@ -9,7 +9,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>order-service-messagin</artifactId>
+    <artifactId>order-service-messaging</artifactId>
 
     <dependencies>
         <dependency>

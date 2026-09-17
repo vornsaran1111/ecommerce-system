@@ -68,7 +68,7 @@
 
             <dependency>
                 <groupId>test</groupId>
-                <artifactId>order-service-messagin</artifactId>
+                <artifactId>order-service-messaging</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
