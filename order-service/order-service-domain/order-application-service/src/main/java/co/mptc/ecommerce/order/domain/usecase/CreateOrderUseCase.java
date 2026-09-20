@@ -16,6 +16,7 @@ public class CreateOrderUseCase {
         log.info(" executing createOrderUseCase: {}", createOrderCommand);
 
         //validate customer
+
        // validate business
 
         return new CreateOrderResult(UUID.randomUUID());

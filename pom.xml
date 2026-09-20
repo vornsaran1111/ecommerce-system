@@ -12,7 +12,7 @@
     <artifactId>ecommerce-system</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-    <!--build sub module-->
+    <!--build submodule-->
 
     <packaging>pom</packaging>
     <name>ecommerce-system</name>
@@ -92,7 +92,7 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
-        <!--  our dependency-->
+
         <!-- lombok-->
         <dependency>
             <groupId>org.projectlombok</groupId>

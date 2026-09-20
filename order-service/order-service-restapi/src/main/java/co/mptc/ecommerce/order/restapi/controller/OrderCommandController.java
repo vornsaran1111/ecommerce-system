@@ -11,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
@@ -34,7 +32,7 @@ public class OrderCommandController {
         CreateOrderResult createOrderResult = createOrderUseCase.execute(createOrderCommand);
 
         //Mapping login
-        return  orderWebMapper.createOrderResultToOrderCreateResponse(createOrderResult);
+        return orderWebMapper.createOrderResultToOrderCreateResponse(createOrderResult);
     }
 
 }
