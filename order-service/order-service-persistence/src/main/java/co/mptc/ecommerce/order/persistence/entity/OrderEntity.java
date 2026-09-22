@@ -19,7 +19,7 @@ public class OrderEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID orderId;
+    private UUID id;
     private UUID customerId;
     private UUID businessId;
 

@@ -18,6 +18,50 @@ public class Order extends AggregateRoot<OrderId> {
     private OrderStatus orderStatus;
     private List<String> failureMessages;
 
+    private Order(Builder builder) {
+        super.setId(builder.id);
+        customerId = builder.customerId;
+        businessId = builder.businessId;
+        deliveryAddress = builder.deliveryAddress;
+        price = builder.price;
+        orderItems = builder.orderItems;
+        trackingId = builder.trackingId;
+        orderStatus = builder.orderStatus;
+        failureMessages = builder.failureMessages;
+    }
+
+    public CustomerId getCustomerId() {
+        return customerId;
+    }
+
+    public BusinessId getBusinessId() {
+        return businessId;
+    }
+
+    public StreetAddress getDeliveryAddress() {
+        return deliveryAddress;
+    }
+
+    public Money getPrice() {
+        return price;
+    }
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public TrackingId getTrackingId() {
+        return trackingId;
+    }
+
+    public OrderStatus getOrderStatus() {
+        return orderStatus;
+    }
+
+    public List<String> getFailureMessages() {
+        return failureMessages;
+    }
+
     // ============== start critical business logic ===========//
 
     public void validationOrder() {
@@ -117,70 +161,24 @@ public class Order extends AggregateRoot<OrderId> {
         }
     }
 
-    // ============== end critical business logic ===========//
-
-    public CustomerId getCustomerId() {
-        return customerId;
+    public static Builder builder() {
+        return new Builder();
     }
-
-    public BusinessId getBusinessId() {
-        return businessId;
-    }
-
-    public StreetAddress getDeliveryAddress() {
-        return deliveryAddress;
-    }
-
-    public Money getMoney() {
-        return price;
-    }
-
-    public List<OrderItem> getOrderItems() {
-        return orderItems;
-    }
-
-    public TrackingId getTrackingId() {
-        return trackingId;
-    }
-
-    public OrderStatus getOrderStatus() {
-        return orderStatus;
-    }
-
-    public List<String> getFailureMessage() {
-        return failureMessages;
-    }
-
-    private Order(Builder builder) {
-        super.setId(builder.id);
-        customerId = builder.customerId;
-        businessId = builder.businessId;
-        deliveryAddress = builder.deliveryAddress;
-        price = builder.money;
-        orderItems = builder.orderItems;
-        trackingId = builder.trackingId;
-        orderStatus = builder.orderStatus;
-        failureMessages = builder.failureMessage;
-    }
-
     public static final class Builder {
         private OrderId id;
         private CustomerId customerId;
         private BusinessId businessId;
         private StreetAddress deliveryAddress;
-        private Money money;
+        private Money price;
         private List<OrderItem> orderItems;
         private TrackingId trackingId;
         private OrderStatus orderStatus;
-        private List<String> failureMessage;
-
+        private List<String> failureMessages;
 
         private Builder() {
         }
 
-        public static Builder builder() {
-            return new Builder();
-        }
+
 
         public Builder id(OrderId val) {
             id = val;
@@ -202,8 +200,8 @@ public class Order extends AggregateRoot<OrderId> {
             return this;
         }
 
-        public Builder money(Money val) {
-            money = val;
+        public Builder price(Money val) {
+            price = val;
             return this;
         }
 
@@ -222,8 +220,8 @@ public class Order extends AggregateRoot<OrderId> {
             return this;
         }
 
-        public Builder failureMessage(List<String> val) {
-            failureMessage = val;
+        public Builder failureMessages(List<String> val) {
+            failureMessages = val;
             return this;
         }
 
@@ -231,4 +229,8 @@ public class Order extends AggregateRoot<OrderId> {
             return new Order(this);
         }
     }
+
+    // ============== end critical business logic ===========//
+
+
 }

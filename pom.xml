@@ -12,7 +12,7 @@
     <artifactId>ecommerce-system</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-    <!--build sub module-->
+    <!--build submodule-->
 
     <packaging>pom</packaging>
     <name>ecommerce-system</name>
@@ -55,6 +55,11 @@
                 <artifactId>common-restapi</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>test</groupId>
+                <artifactId>common-persistence</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>test</groupId>
@@ -92,7 +97,7 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
-        <!--  our dependency-->
+
         <!-- lombok-->
         <dependency>
             <groupId>org.projectlombok</groupId>
