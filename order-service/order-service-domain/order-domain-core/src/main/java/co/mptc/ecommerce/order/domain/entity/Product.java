@@ -17,6 +17,11 @@ public class Product extends BaseEntity<ProductId>
         return price;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
+
     private Product(Builder builder) {
         super.setId(builder.id);
         name = builder.name;

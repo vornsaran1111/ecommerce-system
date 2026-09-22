@@ -55,6 +55,11 @@
                 <artifactId>common-restapi</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>test</groupId>
+                <artifactId>common-persistence</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>test</groupId>
