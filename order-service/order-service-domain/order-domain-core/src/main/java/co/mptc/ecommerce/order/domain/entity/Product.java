@@ -6,8 +6,8 @@ import co.mptc.ecommerce.order.domain.valueObject.ProductId;
 public class Product extends BaseEntity<ProductId>
 {
 
-    private final String name;
-    private final Money price;
+    private  String name;
+    private  Money price;
 
     public String getName() {
         return name;
@@ -15,6 +15,11 @@ public class Product extends BaseEntity<ProductId>
 
     public Money getPrice() {
         return price;
+    }
+
+    public void updateConfirmedNameAndPrice(String name, Money price){
+        this.name = name;
+        this.price = price;
     }
 
     public static Builder builder() {

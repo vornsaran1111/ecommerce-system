@@ -14,7 +14,7 @@ public record OrderCreateRequest(
         @NotNull
         UUID businessId,
         @NotNull
-        OrderCreateRequest orderAddress,
+        OrderAddressRequest orderAddress,
         @NotNull
         List<OrderItemRequest> items,
         @NotNull

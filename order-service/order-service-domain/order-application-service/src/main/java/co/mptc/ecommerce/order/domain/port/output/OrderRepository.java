@@ -4,5 +4,5 @@ import co.mptc.ecommerce.order.domain.entity.Order;
 
 public interface OrderRepository {
 
-    void save(Order order);
+    Order saveOrder(Order order);
 }

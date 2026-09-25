@@ -4,9 +4,9 @@ import co.mptc.ecommerce.order.domain.entity.Order;
 
 import java.time.ZonedDateTime;
 
-public class OrderCreateEvent extends OrderEvent{
+public class OrderCreatedEvent extends OrderEvent{
 
-    public OrderCreateEvent(Order order, ZonedDateTime createdAt) {
+    public OrderCreatedEvent(Order order, ZonedDateTime createdAt) {
         super(order, createdAt);
     }
 }

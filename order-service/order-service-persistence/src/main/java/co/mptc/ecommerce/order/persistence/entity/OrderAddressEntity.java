@@ -17,7 +17,7 @@ public class OrderAddressEntity {
     @Id
     private UUID id;
     private String street;
-    private String postcode;
+    private String postalCode;
     private String city;
 
     @OneToOne(mappedBy = "orderAddress")

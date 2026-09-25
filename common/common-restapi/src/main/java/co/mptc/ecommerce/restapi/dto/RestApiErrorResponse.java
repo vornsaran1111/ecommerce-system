@@ -7,7 +7,6 @@ import lombok.Builder;
 public record RestApiErrorResponse<T>(
         String code,
         String message,
-
         @JsonInclude(JsonInclude.Include.NON_NULL)
         T detail
 
