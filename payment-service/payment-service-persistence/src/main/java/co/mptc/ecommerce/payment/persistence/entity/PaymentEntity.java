@@ -18,7 +18,7 @@ import java.util.UUID;
 public class PaymentEntity {
 
     @Id
-    private UUID id;          // no @GeneratedValue → id is created in domain (initializePayment)
+    private UUID id;
     private UUID orderId;
     private UUID customerId;
     private BigDecimal price;

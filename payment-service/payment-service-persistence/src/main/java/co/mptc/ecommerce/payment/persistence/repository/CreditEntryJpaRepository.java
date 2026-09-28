@@ -8,6 +8,5 @@ import java.util.UUID;
 
 public interface CreditEntryJpaRepository extends JpaRepository<CreditEntryEntity, UUID> {
 
-    // Spring generates SQL from the method name: WHERE customer_id = ?
     Optional<CreditEntryEntity> findByCustomerId(UUID customerId);
 }

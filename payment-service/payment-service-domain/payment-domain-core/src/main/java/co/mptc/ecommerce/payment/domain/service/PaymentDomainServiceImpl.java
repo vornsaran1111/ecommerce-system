@@ -12,14 +12,6 @@ import java.util.UUID;
 public class PaymentDomainServiceImpl implements PaymentDomainService {
 
     /// @param payment
-    @Override
-    public void validateAndInitiatePayment(Payment payment) {
-        payment.validatePayment();
-        payment.initializePayment();
-
-    }
-
-    /// @param payment
     /// @param creditEntry
     /// @return
     @Override

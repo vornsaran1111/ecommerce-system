@@ -8,6 +8,7 @@ import co.mptc.ecommerce.payment.domain.entity.Payment;
 import co.mptc.ecommerce.payment.domain.exception.PaymentDomainException;
 import co.mptc.ecommerce.payment.domain.mapper.PaymentDomainMapper;
 import co.mptc.ecommerce.payment.domain.port.output.CreditEntityRepository;
+import co.mptc.ecommerce.payment.domain.port.output.CreditHistoryRepository;
 import co.mptc.ecommerce.payment.domain.port.output.PaymentRepository;
 import co.mptc.ecommerce.payment.domain.service.PaymentDomainService;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +24,14 @@ public class CreatePaymentUseCase {
     private final PaymentRepository paymentRepository;
     private final PaymentDomainMapper paymentDomainMapper;
     private final CreditEntityRepository creditEntityRepository;
+    private final CreditHistoryRepository creditHistoryRepository;
 
 
     public CreatePaymentResult execute(CreatePaymentCommand createPaymentCommand) {
-        //convert input object by map-struct
+        log.info("executing CreatePaymentUseCase: {}", createPaymentCommand);
+
+        //1. convert input object by map-struct
         Payment payment = paymentDomainMapper.createPaymentCommandToPayment(createPaymentCommand);
-        paymentDomainService.validateAndInitiatePayment(payment);
 
         //2. load customer credit
         CreditEntry creditEntry = creditEntityRepository.findByCustomerId(payment.getCustomerId());
@@ -40,11 +43,16 @@ public class CreatePaymentUseCase {
         //3. domain logic (validate → initialize → subtract credit → COMPLETED)
         CreditHistory creditHistory = paymentDomainService.validateAndInitiatePayment(payment, creditEntry);
 
-        //save
+        //4. save
         Payment savePayment = paymentRepository.savePayment(payment);
         if (savePayment == null) {
             throw new PaymentDomainException("Could not save payment into Database");
         }
+        creditEntityRepository.save(creditEntry);
+        creditHistoryRepository.save(creditHistory);
+
+        log.info("Payment {} completed for customer {}", savePayment.getId().value(),
+                payment.getCustomerId().value());
 
         return new CreatePaymentResult(savePayment.getId().value(), savePayment.getPaymentStatus());
     }
