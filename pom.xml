@@ -30,6 +30,7 @@
         <module>common/common-domain</module>
         <module>common/common-restapi</module>
         <module>order-service</module>
+        <module>payment-service</module>
     </modules>
     <scm>
         <connection/>
@@ -91,6 +92,12 @@
             <dependency>
                 <groupId>test</groupId>
                 <artifactId>order-service-main</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>test</groupId>
+                <artifactId>payment-domain-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
