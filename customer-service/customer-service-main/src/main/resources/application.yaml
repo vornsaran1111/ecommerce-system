@@ -1,9 +1,9 @@
-#payment service running port (order-service uses 8550)
+#customer service running port (payment-service uses 8551)
 server:
   port: 0
 spring:
   application:
-    name: payment-service
+    name: customer-service
   profiles:
     active: dev
   cloud:
@@ -17,7 +17,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: ecommerce_user
     password: ecommerce_pass
-    url: jdbc:postgresql://localhost:8432/db_payment
+    url: jdbc:postgresql://localhost:8432/db_customer
   jpa:
     hibernate:
       ddl-auto: update

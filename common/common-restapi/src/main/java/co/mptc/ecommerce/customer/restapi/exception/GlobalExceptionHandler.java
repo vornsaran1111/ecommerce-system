@@ -1,7 +1,7 @@
-package co.mptc.ecommerce.restapi.exception;
+package co.mptc.ecommerce.customer.restapi.exception;
 
-import co.mptc.ecommerce.restapi.dto.FieldErrorResponse;
-import co.mptc.ecommerce.restapi.dto.RestApiErrorResponse;
+import co.mptc.ecommerce.customer.restapi.dto.FieldErrorResponse;
+import co.mptc.ecommerce.customer.restapi.dto.RestApiErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;

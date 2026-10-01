@@ -1,4 +1,4 @@
-package co.mptc.ecommerce.restapi.dto;
+package co.mptc.ecommerce.customer.restapi.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;

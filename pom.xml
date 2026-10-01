@@ -31,6 +31,7 @@
         <module>common/common-restapi</module>
         <module>order-service</module>
         <module>payment-service</module>
+        <module>customer-service</module>
     </modules>
     <scm>
         <connection/>

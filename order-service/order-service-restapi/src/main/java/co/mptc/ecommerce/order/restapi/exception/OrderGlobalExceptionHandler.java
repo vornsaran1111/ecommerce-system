@@ -2,8 +2,8 @@ package co.mptc.ecommerce.order.restapi.exception;
 
 import co.mptc.ecommerce.business.exception.BusinessPersistenceException;
 import co.mptc.ecommerce.order.domain.exception.OrderDomainException;
-import co.mptc.ecommerce.restapi.dto.RestApiErrorResponse;
-import co.mptc.ecommerce.restapi.exception.GlobalExceptionHandler;
+import co.mptc.ecommerce.customer.restapi.dto.RestApiErrorResponse;
+import co.mptc.ecommerce.customer.restapi.exception.GlobalExceptionHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
