@@ -1,9 +1,7 @@
 package co.mptc.ecommerce.business.persistence.adapter;
 
 import co.mptc.ecommerce.business.domain.entity.Business;
-import co.mptc.ecommerce.business.domain.event.OrderApprovalEvent;
 import co.mptc.ecommerce.business.domain.port.output.BusinessRepository;
-import co.mptc.ecommerce.business.domain.service.BusinessDomainService;
 import co.mptc.ecommerce.business.persistence.entity.ProductEntity;
 import co.mptc.ecommerce.business.persistence.mapper.BusinessPersistenceMapper;
 import co.mptc.ecommerce.business.persistence.repository.BusinessJpaRepository;

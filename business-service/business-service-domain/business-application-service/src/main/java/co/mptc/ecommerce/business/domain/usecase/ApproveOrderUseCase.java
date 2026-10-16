@@ -48,11 +48,11 @@ public class ApproveOrderUseCase {
                                 confirmedProduct.getPrice(),
                                 confirmedProduct.isAvailable())));
 
-        //4. domain logic (validate → APPROVED or REJECTED)
+        //4. domain logic
         List<String> failureMessages = new ArrayList<>();
         OrderApprovalEvent orderApprovalEvent = businessDomainService.validateOrder(business, failureMessages);
 
-        //5. save approval (APPROVED and REJECTED are both saved)
+        //5. save approval
         orderApprovalRepository.save(business.getOrderApproval());
 
         log.info("Order {} is {}", command.orderId(), business.getOrderApproval().getApprovalStatus());

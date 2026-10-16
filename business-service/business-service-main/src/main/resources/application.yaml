@@ -1,17 +1,25 @@
 server:
-  port: 0
+  port: 8551
+  forward-headers-strategy: framework
 spring:
   application:
     name: business-service
   profiles:
     active: dev
+  config:
+    import:
+      - nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
   cloud:
     nacos:
+      config:
+        file-extension: yaml
+        namespace: ${spring.profiles.active}
       discovery:
         namespace: ${spring.profiles.active}
       username: nacos
-      password: <same password as your customer-service application.yaml>
+      password: Saran@1111
       server-addr: 127.0.0.1:8848
+
   datasource:
     driver-class-name: org.postgresql.Driver
     username: ecommerce_user

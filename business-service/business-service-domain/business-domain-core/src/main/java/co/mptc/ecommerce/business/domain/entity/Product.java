@@ -10,7 +10,7 @@ public class Product extends BaseEntity<ProductId> {
     private final int quantity;
     private boolean available;
 
-    // set real product information that comes from database
+
     public void updateWithConfirmedNamePriceAndAvailability(String name, Money price, boolean available) {
         this.name = name;
         this.price = price;

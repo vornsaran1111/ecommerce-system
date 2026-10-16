@@ -33,6 +33,7 @@
         <module>payment-service</module>
         <module>customer-service</module>
         <module>business-service</module>
+        <module>gateway-service</module>
     </modules>
     <scm>
         <connection/>
@@ -170,7 +171,6 @@
 
                     </annotationProcessorPaths>
                 </configuration>
-
             </plugin>
         </plugins>
     </build>

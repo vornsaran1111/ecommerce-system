@@ -1,18 +1,26 @@
 #payment service running port (order-service uses 8550)
 server:
-  port: 0
+  port: 8553
+  forward-headers-strategy: framework
 spring:
   application:
     name: payment-service
   profiles:
     active: dev
+  config:
+    import:
+      - nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
   cloud:
     nacos:
+      config:
+        file-extension: yaml
+        namespace: ${spring.profiles.active}
       discovery:
         namespace: ${spring.profiles.active}
       username: nacos
       password: Saran@1111
       server-addr: 127.0.0.1:8848
+
   datasource:
     driver-class-name: org.postgresql.Driver
     username: ecommerce_user
