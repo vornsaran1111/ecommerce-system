@@ -1,0 +1,15 @@
+package co.mptc.ecommerce.customer.restapi.exception;
+
+import org.springframework.http.HttpStatus;
+
+public class GlobalException extends RuntimeException{
+
+    private  final HttpStatus status;
+    public HttpStatus getHttpStatus(){
+        return status;
+    }
+    public GlobalException(HttpStatus status,String message) {
+        super(message);
+        this.status = status;
+    }
+}

@@ -19,7 +19,11 @@ spring:
       username: nacos
       password: Saran@1111
       server-addr: 127.0.0.1:8848
-
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8888/realms/ecommerce
   datasource:
     driver-class-name: org.postgresql.Driver
     username: ecommerce_user

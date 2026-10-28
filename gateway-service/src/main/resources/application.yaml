@@ -5,11 +5,19 @@ spring:
     name: gateway-service
   profiles:
     active: dev
+  data:
+    redis:     #store data in redis
+      host: localhost
+      port: 6379
   cloud:
     gateway:
       server:
         webflux:
-#          routes:
+          routes:
+#            - id: vuejs
+#              uri: http://[::1]:5173 #http://localhost:5173
+#              predicates:
+#                - Path=/**
 #            - id: order-service
 #              uri: lb://order-service
 #              predicates:
@@ -18,15 +26,35 @@ spring:
 #                - RewritePath=/order-service/?(?<segment>.*), /$\{segment}
           discovery:
             locator:
-              enabled: true
+              enabled: true  #need to enabled true
               lower-case-service-id: true
           trusted-proxies: ".*"
+          default-filters:
+            - SaveSession
+            - TokenRelay=
     nacos:
       discovery:
         namespace: ${spring.profiles.active}
       username: nacos
       password: Saran@1111
       server-addr: 127.0.0.1:8848
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8888/realms/ecommerce
+        registration:
+          ecommerce-postman:
+            provider: keycloak
+            client-id: ecommerce-postman
+            authorization-grant-type: authorization_code
+            scope:
+              - openid
+              - email
+              - profile
+#            client-secret: secret
+            redirect-uri: http://localhost:8585/login/oauth2/code/ecommerce-postman
 management:
   endpoints:
     web:
@@ -45,6 +73,8 @@ scalar:
       url: /business-service/v3/api-docs
     - title: Payment service
       url: /payment-service/v3/api-docs
+    - title: User service
+      url: /user-service/v3/api-docs
 springdoc:
   swagger-ui:
     urls:
@@ -56,3 +86,5 @@ springdoc:
         url: /business-service/v3/api-docs
       - name: Payment service
         url: /payment-service/v3/api-docs
+      - name: User service
+        url: /user-service/v3/api-docs

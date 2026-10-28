@@ -33,6 +33,13 @@
             <artifactId>order-domain-core</artifactId>
         </dependency>
 
+        <!--oauth2-->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security-oauth2-resource-server</artifactId>
+        </dependency>
+
         <!--        spring web-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
