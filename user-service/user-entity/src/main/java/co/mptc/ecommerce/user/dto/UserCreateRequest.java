@@ -16,6 +16,6 @@ public record UserCreateRequest(
         @NotBlank
         String confirmPassword,
         @NotBlank
-        String roleId
+        String roleName
 ) {
 }

@@ -1,13 +1,17 @@
-package co.mptc.ecommerce.user.service;
+package co.mptc.ecommerce.user.service.impl;
 
 import co.mptc.ecommerce.user.dto.UserCreateRequest;
 import co.mptc.ecommerce.user.dto.UserResponse;
+import co.mptc.ecommerce.user.dto.UserUpdateRequest;
 import co.mptc.ecommerce.user.entity.UserEntity;
 import co.mptc.ecommerce.user.exception.PasswordMismatchException;
+import co.mptc.ecommerce.user.exception.UserNotFoundException;
 import co.mptc.ecommerce.user.exception.UsernameConflictException;
 import co.mptc.ecommerce.user.mapper.UserMapper;
 import co.mptc.ecommerce.user.repository.UserRepository;
-import jakarta.ws.rs.core.Response;
+import co.mptc.ecommerce.user.service.KeycloakRoleService;
+import co.mptc.ecommerce.user.service.KeycloakUserService;
+import co.mptc.ecommerce.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.Keycloak;
@@ -26,6 +30,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final Keycloak keycloak;
+    private final KeycloakUserService  keycloakUserService;
+    private final KeycloakRoleService keycloakRoleService;
 
     /// @param userCreateRequest
     /// @return
@@ -60,19 +66,33 @@ public class UserServiceImpl implements UserService {
 
         userRepresentation.setCredentials(List.of(credentialRepresentation));
 
-        try (Response response = keycloak.realm("ecommerce")
-                .users()
-                .create(userRepresentation)) {
-            log.info("Keycloak response: {}", response.getStatus());
-            if (response.getStatus() == HttpStatus.CREATED.value()) {
-                log.info("Created user");
-            } else if (response.getStatus() == HttpStatus.CONFLICT.value()) {
-                log.info("Keycloak user data conflict");
-            } else {
-                log.info("Cannot create user");
-            }
-        }
 
-        return null;
+        keycloakUserService.createKeycloakUser(userRepresentation);
+        UserRepresentation createdUser = keycloakUserService.getKeycloakUserByUsername(
+                userEntity.getUsername()
+        );
+        log.info("User created: {}", createdUser);
+        keycloakRoleService.assignRoles(createdUser.getId(), userCreateRequest.roleName());
+
+        // Saving user into database
+        userEntity.setId(createdUser.getId());
+        userRepository.save(userEntity);
+
+        return userMapper.toResponse(userEntity, createdUser);
+    }
+
+    /// @param userUpdateRequest
+    /// @return
+    @Override
+    public UserResponse update(String id,UserUpdateRequest userUpdateRequest) {
+
+        UserEntity userEntity = userRepository
+                .findById(id)
+                .orElseThrow(()-> new UserNotFoundException(HttpStatus.NOT_FOUND, "User not found"));
+
+        userMapper.toEntity(userUpdateRequest, userEntity);
+        userRepository.save(userEntity);
+
+        return userMapper.toResponse(userEntity);
     }
 }
