@@ -1,0 +1,203 @@
+package co.mptc.ecommerce.user.service.impl;
+
+import co.mptc.ecommerce.customer.restapi.dto.PageResponse;
+import co.mptc.ecommerce.user.dto.UserCreateRequest;
+import co.mptc.ecommerce.user.dto.UserResponse;
+import co.mptc.ecommerce.user.dto.UserUpdateRequest;
+import co.mptc.ecommerce.user.entity.UserEntity;
+import co.mptc.ecommerce.user.exception.PasswordMismatchException;
+import co.mptc.ecommerce.user.exception.UserHybridDataInconsistencyException;
+import co.mptc.ecommerce.user.exception.UserNotFoundException;
+import co.mptc.ecommerce.user.exception.UsernameConflictException;
+import co.mptc.ecommerce.user.mapper.UserMapper;
+import co.mptc.ecommerce.user.repository.UserRepository;
+import co.mptc.ecommerce.user.service.KeycloakRoleService;
+import co.mptc.ecommerce.user.service.KeycloakUserService;
+import co.mptc.ecommerce.user.service.UserService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@RequiredArgsConstructor
+@Slf4j
+@Service
+public class UserServiceImpl implements UserService {
+
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
+    private final Keycloak keycloak;
+    private final KeycloakUserService  keycloakUserService;
+    private final KeycloakRoleService keycloakRoleService;
+
+    /// @param userCreateRequest
+    /// @return
+    @Override
+    public UserResponse create(UserCreateRequest userCreateRequest) {
+
+        UserEntity userEntity = userMapper.toEntity(userCreateRequest);
+
+        // Validate username
+        if (userRepository.existsByUsername(userCreateRequest.username())) {
+            throw new UsernameConflictException(HttpStatus.CONFLICT,
+                    "Username already exists!");
+        }
+
+        // Validate password
+        if (!userCreateRequest.password().equals(userCreateRequest.confirmPassword())) {
+            throw new PasswordMismatchException(HttpStatus.BAD_REQUEST,
+                    "Password does not match");
+        }
+
+        //save user into keycloak
+        //after
+        // Save user into Keycloak
+        // After saved user, save user into DB
+        UserRepresentation userRepresentation = userMapper.toRepresentation(userCreateRequest);
+        userRepresentation.setEnabled(true);
+        userRepresentation.setEmailVerified(false);
+
+        CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
+        credentialRepresentation.setType(CredentialRepresentation.PASSWORD);
+        credentialRepresentation.setValue(userCreateRequest.password());
+
+        userRepresentation.setCredentials(List.of(credentialRepresentation));
+
+
+        keycloakUserService.createKeycloakUser(userRepresentation);
+        UserRepresentation createdUser = keycloakUserService.getKeycloakUserByUsername(
+                userEntity.getUsername()
+        );
+        log.info("User created: {}", createdUser);
+        keycloakRoleService.assignRoles(createdUser.getId(), userCreateRequest.roleName());
+
+        // Saving user into database
+        userEntity.setId(createdUser.getId());
+        userRepository.save(userEntity);
+
+        return userMapper.toResponse(userEntity, createdUser);
+    }
+
+    /// @param userUpdateRequest
+    /// @return
+    @Override
+    public UserResponse update(String id,UserUpdateRequest userUpdateRequest) {
+
+        UserEntity userEntity = userRepository
+                .findById(id)
+                .orElseThrow(()-> new UserNotFoundException(HttpStatus.NOT_FOUND, "User not found"));
+
+        userMapper.toEntity(userUpdateRequest, userEntity);
+        userRepository.save(userEntity);
+
+        UserRepresentation userRepresentation = keycloakUserService.getKeycloakUserByUsername(
+                userEntity.getUsername()
+        );
+        // Attempt to Keycloak data
+        if (!(userUpdateRequest.familyName() == null && userUpdateRequest.givenName() == null)) {
+            if (userUpdateRequest.familyName() != null) {
+                userRepresentation.setFirstName(userUpdateRequest.familyName());
+            }
+
+            if (userUpdateRequest.givenName() != null) {
+                userRepresentation.setLastName(userUpdateRequest.givenName());
+            }
+
+            keycloakUserService.updateKeycloakUser(id, userRepresentation);
+        }
+
+        return userMapper.toResponse(userEntity, userRepresentation);
+    }
+
+    /// @param id
+    /// @return
+    @Override
+    public UserResponse getById(String id) {
+        UserEntity userEntity = userRepository
+                .findById(id)
+                .orElseThrow(() -> new UserNotFoundException(
+                        HttpStatus.NOT_FOUND,
+                        "User not found"
+                ));
+        UserRepresentation userRepresentation = keycloakUserService.getKeycloakUserById(id);
+
+        return userMapper.toResponse(
+                userEntity,
+                userRepresentation
+        );
+    }
+
+    /// @param id
+    @Override
+    public void deleteById(String id) {
+        UserEntity userEntity = userRepository
+                .findById(id)
+                .orElseThrow(() -> new UserNotFoundException(
+                        HttpStatus.NOT_FOUND,
+                        "User not found"
+                ));
+        userRepository.delete(userEntity);
+        keycloakUserService.deleteKeycloakUserById(id);
+    }
+
+    /// @param username
+    /// @return
+    @Override
+    public UserResponse getByUsername(String username) {
+        UserEntity userEntity = userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(
+                        HttpStatus.NOT_FOUND,
+                        "User not found"
+                ));
+        UserRepresentation userRepresentation = keycloakUserService.getKeycloakUserByUsername(username);
+
+        return userMapper.toResponse(
+                userEntity,
+                userRepresentation
+        );
+    }
+
+    /// @param roleName
+    /// @param pageable
+    /// @return
+    @Override
+    public PageResponse<UserResponse> getUsersByRoleName(String roleName, Pageable pageable) {
+        Slice<UserRepresentation> userRepresentationSlice = keycloakUserService.getKeycloakUsersByRoleName(roleName, pageable);
+        return mergeUserEntityWithUserRepresentation(userRepresentationSlice);
+    }
+
+    /// @param pageable
+    /// @return
+    @Override
+    public PageResponse<UserResponse> getUsers(PageRequest pageable) {
+        Slice<UserRepresentation> userRepresentationSlice = keycloakUserService.getKeycloakUsers(pageable);
+        return mergeUserEntityWithUserRepresentation(userRepresentationSlice);
+    }
+
+    private PageResponse<UserResponse> mergeUserEntityWithUserRepresentation(Slice<UserRepresentation> userRepresentationSlice) {
+        List<UserResponse> userResponseList = userRepresentationSlice
+                .map(userRepresentation -> {
+                    UserEntity userEntity = userRepository.findById(userRepresentation.getId())
+                            .orElseThrow(() -> new UserHybridDataInconsistencyException(HttpStatus.INTERNAL_SERVER_ERROR,
+                                    "User hybrid data is inconsistent"));
+                    return userMapper.toResponse(userEntity, userRepresentation);
+                })
+                .toList();
+        return PageResponse.<UserResponse>builder()
+                .items(userResponseList)
+                .page(userRepresentationSlice.getNumber())
+                .size(userRepresentationSlice.getSize())
+                .hasNext(userRepresentationSlice.hasNext())
+                .build();
+    }
+
+}
