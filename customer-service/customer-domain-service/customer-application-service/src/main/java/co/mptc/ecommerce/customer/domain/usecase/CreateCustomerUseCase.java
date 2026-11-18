@@ -1,6 +1,7 @@
 package co.mptc.ecommerce.customer.domain.usecase;
 
 import co.mptc.ecommerce.client.dto.UserResponse;
+import co.mptc.ecommerce.client.exception.UserServiceUnavailableException;
 import co.mptc.ecommerce.client.feign.UserFeignClient;
 import co.mptc.ecommerce.customer.domain.dto.CreateCustomerCommand;
 import co.mptc.ecommerce.customer.domain.dto.CreateCustomerResult;
