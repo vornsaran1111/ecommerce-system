@@ -9,6 +9,9 @@ spring:
     redis:     #store data in redis
       host: localhost
       port: 6379
+  config:
+    import:
+      - nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
   cloud:
     gateway:
       server:
@@ -33,11 +36,41 @@ spring:
             - SaveSession
             - TokenRelay=
     nacos:
+      config:
+        file-extension: yaml
       discovery:
         namespace: ${spring.profiles.active}
       username: nacos
       password: Saran@1111
       server-addr: 127.0.0.1:8848
+    sentinel:
+      transport:
+        dashboard: localhost:8081
+        port: 8719
+      eager: true
+      web-context-unify: false
+      datasource:
+        sentinel-flow: # name of datasource
+          nacos: # dynamic datasource with nacos
+            server-addr: 127.0.0.1:8848        # link to nacos
+            data-id: sentinel-flow                # data-id of config file in nacos
+            namespace: dev                        # namespace in nacos
+            group-id: DEFAULT_GROUP            # group-id in nacos
+            data-type: json                        # config format in nacos
+            rule-type: flow
+        sentinel-degrade:
+          nacos:
+            server-addr: 127.0.0.1:8848
+            data-id: sentinel-degrade
+            namespace: ${spring.profiles.active}
+            group-id: DEFAULT_GROUP
+            data-type: json
+            rule-type: degrade
+      scg:
+        fallback:
+          mode: response
+          response-status: 429
+          response-body: '{"error": "Too many request at gateway"}'
   security:
     oauth2:
       client:

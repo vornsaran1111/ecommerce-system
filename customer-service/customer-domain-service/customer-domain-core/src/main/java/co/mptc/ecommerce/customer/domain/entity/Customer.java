@@ -15,76 +15,6 @@ public class Customer extends AggregateRoot<CustomerId> {
     private LoyaltyTier loyaltyTier;
     private CustomerStatus status;
 
-    private Customer(Builder builder) {
-        super.setId(builder.id);
-        username = builder.username;
-        familyName = builder.familyName;
-        givenName = builder.givenName;
-        email = builder.email;
-        phoneNumber = builder.phoneNumber;
-        loyaltyTier = builder.loyaltyTier;
-        status = builder.status;
-    }
-
-    // ============== start critical business logic ===========//
-
-    public void validateCustomer() {
-        validateRequiredText(username, "Username");
-        validateRequiredText(familyName, "Family name");
-        validateRequiredText(givenName, "Given name");
-        validateEmail();
-        validatePhoneNumber();
-    }
-
-    // new customer: generate id, start with BRONZE and ACTIVE
-    public void initiateCustomer() {
-        if (super.getId() != null || status != null) {
-            throw new CustomerDomainException("Customer is not in correct state for initialization");
-        }
-        setId(new CustomerId(UUID.randomUUID()));
-        loyaltyTier = LoyaltyTier.BRONZE;
-        status = CustomerStatus.ACTIVE;
-    }
-
-    // username cannot be changed
-    public void updateCustomer(String familyName, String givenName, Email email, PhoneNumber phoneNumber) {
-        if (status != CustomerStatus.ACTIVE) {
-            throw new CustomerDomainException("Customer is not ACTIVE, cannot update");
-        }
-        this.familyName = familyName;
-        this.givenName = givenName;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        validateCustomer();
-    }
-
-    public void deactivateCustomer() {
-        if (status != CustomerStatus.ACTIVE) {
-            throw new CustomerDomainException("Customer is not ACTIVE, cannot deactivate");
-        }
-        status = CustomerStatus.INACTIVE;
-    }
-
-    private void validateRequiredText(String value, String fieldName) {
-        if (value == null || value.isBlank()) {
-            throw new CustomerDomainException(fieldName + " must not be blank");
-        }
-    }
-
-    private void validateEmail() {
-        if (email == null || !email.isValid()) {
-            throw new CustomerDomainException("Email is not valid");
-        }
-    }
-
-    private void validatePhoneNumber() {
-        if (phoneNumber == null || !phoneNumber.isValid()) {
-            throw new CustomerDomainException("Phone number is not valid");
-        }
-    }
-
-    // ============== end critical business logic ===========//
-
     public String getUsername() {
         return username;
     }
@@ -113,6 +43,71 @@ public class Customer extends AggregateRoot<CustomerId> {
         return status;
     }
 
+    public void validateCustomer(){
+        validateInitialCustomer();
+        validateUsername(username);
+        validateEmail(email);
+    }
+
+    private void validateEmail(Email email) {
+        if (email == null || isBlank(email.value())){
+            throw new CustomerDomainException("Email is not valid");
+        }
+    }
+
+    private void validateUsername(String username) {
+        if (isBlank(username)) {
+            throw new CustomerDomainException("Username is required");
+        }
+    }
+
+    private void validateInitialCustomer() {
+        if(status != null || super.getId() != null){
+            throw new CustomerDomainException("Customer already exists");
+        }
+    }
+
+    private static boolean isBlank(String value) {
+        return value == null || value.isBlank();
+    }
+
+    public void initiateCustomer(){
+        setId(new CustomerId(UUID.randomUUID()));
+        status = CustomerStatus.ACTIVE;
+        if(loyaltyTier == null){
+            loyaltyTier = LoyaltyTier.BRONZE;
+        }
+    }
+
+    public void updateCustomer(String familyName, String givenName, Email email, PhoneNumber phoneNumber){
+        if(status != CustomerStatus.ACTIVE){
+            throw new CustomerDomainException("Customer can not be updated");
+        }
+        validateEmail(email);
+        this.familyName = familyName;
+        this.givenName = givenName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void deactivateCustomer(){
+        if(status != CustomerStatus.ACTIVE){
+            throw new CustomerDomainException("Customer is already deactivated");
+        }
+        status = CustomerStatus.INACTIVE;
+    }
+
+    private Customer(Builder builder) {
+        super.setId(builder.id);
+        username = builder.username;
+        familyName = builder.familyName;
+        givenName = builder.givenName;
+        email = builder.email;
+        phoneNumber = builder.phoneNumber;
+        loyaltyTier = builder.loyaltyTier;
+        status = builder.status;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -129,7 +124,6 @@ public class Customer extends AggregateRoot<CustomerId> {
 
         private Builder() {
         }
-
 
         public Builder id(CustomerId val) {
             id = val;

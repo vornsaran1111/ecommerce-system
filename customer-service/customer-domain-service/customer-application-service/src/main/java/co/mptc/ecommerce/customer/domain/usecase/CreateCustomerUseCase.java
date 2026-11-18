@@ -1,51 +1,65 @@
 package co.mptc.ecommerce.customer.domain.usecase;
 
+import co.mptc.ecommerce.client.dto.UserResponse;
+import co.mptc.ecommerce.client.feign.UserFeignClient;
+import co.mptc.ecommerce.customer.domain.dto.CreateCustomerCommand;
+import co.mptc.ecommerce.customer.domain.dto.CreateCustomerResult;
 import co.mptc.ecommerce.customer.domain.entity.Customer;
 import co.mptc.ecommerce.customer.domain.event.CustomerCreatedEvent;
+import co.mptc.ecommerce.customer.domain.exception.CustomerAlreadyExistsException;
 import co.mptc.ecommerce.customer.domain.exception.CustomerDomainException;
-import co.mptc.ecommerce.customer.domain.service.CustomerDomainService;
-import co.mptc.ecommerce.customer.domain.dto.CreateCustomerCommand;
-import co.mptc.ecommerce.customer.domain.dto.CustomerResult;
+import co.mptc.ecommerce.customer.domain.exception.CustomerNotFoundException;
 import co.mptc.ecommerce.customer.domain.mapper.CustomerDomainMapper;
 import co.mptc.ecommerce.customer.domain.port.output.CustomerRepository;
+import co.mptc.ecommerce.customer.domain.service.CustomerDomainService;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class CreateCustomerUseCase {
-    private final CustomerDomainService customerDomainService;
-    private final CustomerDomainMapper customerDomainMapper;
+    private final CustomerDomainService customerDomainService; // business rules (from customer-domain-core)
     private final CustomerRepository customerRepository;
+    private final CustomerDomainMapper customerDomainMapper;
+    private final UserFeignClient userFeignClient;
 
-    public CustomerResult execute(CreateCustomerCommand command) {
+    @Transactional
+    public CreateCustomerResult execute(CreateCustomerCommand createCustomerCommand) {
+        log.info("Execute CreateCustomerUseCase : {}", createCustomerCommand);
 
-        log.info("executing CreateCustomerUseCase: {}", command);
-
-        //1. convert input object by map-struct
-        Customer customer = customerDomainMapper.createCustomerCommandToCustomer(command);
-
-        //2. domain logic (validate → generate id → BRONZE → ACTIVE)
-        CustomerCreatedEvent createdEvent = customerDomainService.validateAndInitiateCustomer(customer);
-
-        //3. username and email must be unique
-        if (customerRepository.existsByUsername(customer.getUsername())) {
-            throw new CustomerDomainException("Username already exists: " + customer.getUsername());
-        }
-        if (customerRepository.existsByEmail(customer.getEmail())) {
-            throw new CustomerDomainException("Email already exists: " + customer.getEmail().value());
+        // ACL - verify user with user-service.
+        // UserServiceUnavailableException is deliberately not caught here: the REST layer
+        // maps it to 503, which is a different problem from an unknown userId.
+        try {
+            UserResponse userResponse = userFeignClient.getById(createCustomerCommand.userId());
+            log.info("User found: {}", userResponse);
+        } catch (FeignException.NotFound e) {
+            throw new CustomerNotFoundException("User not found with id: " + createCustomerCommand.userId());
         }
 
-        //4. save
-        Customer saveCustomer = customerRepository.saveCustomer(customer);
-        if (saveCustomer == null) {
-            throw new CustomerDomainException("Could not save customer into database");
+        if (customerRepository.existsByUsername(createCustomerCommand.username())) {
+            throw new CustomerAlreadyExistsException("Username already exists: " + createCustomerCommand.username());
         }
 
-        log.info("Customer created with id: {} at {}", saveCustomer.getId().value(), createdEvent.getCreatedAt());
+        if (customerRepository.existsByEmail(createCustomerCommand.email())) {
+            throw new CustomerAlreadyExistsException("Email already exists: " + createCustomerCommand.email());
+        }
 
-        return customerDomainMapper.customerToCustomerResult(saveCustomer);
+        Customer customer = customerDomainMapper.createCustomerCommandToCustomer(createCustomerCommand);
+        CustomerCreatedEvent customerCreatedEvent = customerDomainService.validateAndInitiateCustomer(customer);
+        Customer savedCustomer = customerRepository.save(customer);
+
+        if (savedCustomer == null) {
+            log.error("Could not save customer with username: {}", createCustomerCommand.username());
+            throw new CustomerDomainException("Could not save customer " + createCustomerCommand.username());
+        }
+
+        log.info("Customer created with id: {} at {}",
+                savedCustomer.getId().value(), customerCreatedEvent.getCreatedAt());
+        return new CreateCustomerResult(savedCustomer.getId().value());
     }
 }

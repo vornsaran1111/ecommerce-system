@@ -10,9 +10,8 @@ import co.mptc.ecommerce.order.domain.valueObject.PhoneNumber;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-public class CustomerDomainServiceImpl implements CustomerDomainService{
-    /// @param customer
-    /// @return
+public class CustomerDomainServiceImpl implements CustomerDomainService {
+
     @Override
     public CustomerCreatedEvent validateAndInitiateCustomer(Customer customer) {
         customer.validateCustomer();
@@ -20,20 +19,16 @@ public class CustomerDomainServiceImpl implements CustomerDomainService{
         return new CustomerCreatedEvent(customer, ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
-    /// @param customer
-    /// @param familyName
-    /// @param givenName
-    /// @param email
-    /// @param phoneNumber
-    /// @return
     @Override
-    public CustomerUpdatedEvent updateCustomer(Customer customer, String familyName, String givenName, Email email, PhoneNumber phoneNumber) {
+    public CustomerUpdatedEvent updateCustomer(Customer customer,
+                                               String familyName,
+                                               String givenName,
+                                               Email email,
+                                               PhoneNumber phoneNumber) {
         customer.updateCustomer(familyName, givenName, email, phoneNumber);
         return new CustomerUpdatedEvent(customer, ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
-    /// @param customer
-    /// @return
     @Override
     public CustomerDeactivatedEvent deactivateCustomer(Customer customer) {
         customer.deactivateCustomer();

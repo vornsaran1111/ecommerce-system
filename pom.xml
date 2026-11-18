@@ -108,6 +108,41 @@
             </dependency>
             <dependency>
                 <groupId>test</groupId>
+                <artifactId>customer-application-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>test</groupId>
+                <artifactId>customer-domain-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>test</groupId>
+                <artifactId>customer-service-restapi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>test</groupId>
+                <artifactId>customer-service-main</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>test</groupId>
+                <artifactId>customer-service-persistence</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>test</groupId>
+                <artifactId>customer-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>test</groupId>
+                <artifactId>customer-service-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>test</groupId>
                 <artifactId>user-biz</artifactId>
                 <version>${project.version}</version>
             </dependency>

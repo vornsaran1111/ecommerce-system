@@ -18,7 +18,7 @@ public class GatewayRouteConfig {
                         .and()
                         .not(p -> p.path("/scalar/**", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**"))
                         .filters(f->f.saveSession().tokenRelay())
-                        .uri("http://[::1]:5713"))
+                        .uri("http://[::1]:5173"))
                 .build();
     }
 }
