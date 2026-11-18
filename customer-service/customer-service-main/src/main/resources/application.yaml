@@ -5,6 +5,15 @@ server:
 spring:
   application:
     name: customer-service
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  cache:
+    type: redis
+    redis:
+      time-to-live: 10m
+      cache-null-values: false
   profiles:
     active: dev
   config:

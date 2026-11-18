@@ -10,6 +10,7 @@ import co.mptc.ecommerce.customer.persistence.entity.CustomerEntity;
 import co.mptc.ecommerce.customer.persistence.mapper.CustomerPersistenceMapper;
 import co.mptc.ecommerce.customer.persistence.repository.CustomerJpaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,10 @@ public class CustomerRepositoryAdapter implements CustomerRepository {
     /// @param page
     /// @param size
     /// @return
+    // key is a SpEL expression: a bare word is read as a property of the cache root object,
+    // so "allCustomer" threw EL1008E. It must also vary by page/size or every page would
+    // be served the first page that got cached.
+    @Cacheable(value = "customer", key = "'allCustomer-' + #page + '-' + #size")
     @Override
     public PageResponse<CustomerResult> findAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);

@@ -27,5 +27,7 @@ public interface CustomerWebMapper {
 
     CustomerUpdateResponse updateCustomerResultToCustomerUpdateResponse(UpdateCustomerResult updateCustomerResult);
 
+    CustomerResponse toCustomerResponse(CustomerResult result);
+
     PageResponse<CustomerResponse> toCustomerResponse(PageResponse<CustomerResult> result);
 }

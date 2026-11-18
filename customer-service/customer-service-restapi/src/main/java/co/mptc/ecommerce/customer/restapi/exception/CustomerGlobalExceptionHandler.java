@@ -29,9 +29,9 @@ public class CustomerGlobalExceptionHandler extends GlobalExceptionHandler {
 
     // Base domain exception = a broken business rule, which is a client error.
     @ExceptionHandler(CustomerDomainException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public RestApiErrorResponse<?> handleCustomerDomainException(CustomerDomainException e) {
-        return error(HttpStatus.BAD_REQUEST, e.getMessage());
+        return error(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
     @ExceptionHandler(UserServiceUnavailableException.class)

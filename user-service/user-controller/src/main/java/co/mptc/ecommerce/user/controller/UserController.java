@@ -1,6 +1,6 @@
 package co.mptc.ecommerce.user.controller;
 
-import co.mptc.ecommerce.customer.restapi.dto.PageResponse;
+import co.mptc.ecommerce.core.PageResponse;
 import co.mptc.ecommerce.user.dto.UserCreateRequest;
 import co.mptc.ecommerce.user.dto.UserResponse;
 import co.mptc.ecommerce.user.dto.UserUpdateRequest;
