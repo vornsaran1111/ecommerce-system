@@ -5,6 +5,15 @@ server:
 spring:
   application:
     name: customer-service
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  cache:
+    type: redis
+    redis:
+      time-to-live: 10m
+      cache-null-values: false
   profiles:
     active: dev
   config:
@@ -20,12 +29,18 @@ spring:
       username: nacos
       password: Saran@1111
       server-addr: 127.0.0.1:8848
+    sentinel:
+      transport:
+        dashboard: localhost:8081
+        port: 8719
+      eager: true
+      web-context-unify: false
 
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8888/realms/ecommerce
+#  security:
+#    oauth2:
+#      resourceserver:
+#        jwt:
+#          issuer-uri: http://localhost:8888/realms/ecommerce
   datasource:
     driver-class-name: org.postgresql.Driver
     username: ecommerce_user
@@ -38,3 +53,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
+feign:
+  sentinel:
+    enabled: true

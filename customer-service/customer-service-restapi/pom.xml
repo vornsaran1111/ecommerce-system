@@ -19,7 +19,13 @@
         </dependency>
         <dependency>
             <groupId>test</groupId>
+            <artifactId>customer-service-client</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>test</groupId>
             <artifactId>common-restapi</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -1,52 +1,57 @@
 package co.mptc.ecommerce.customer.domain.usecase;
 
-import co.mptc.ecommerce.customer.domain.entity.Customer;
-import co.mptc.ecommerce.customer.domain.exception.CustomerDomainException;
-import co.mptc.ecommerce.customer.domain.service.CustomerDomainService;
-import co.mptc.ecommerce.customer.domain.dto.CustomerResult;
 import co.mptc.ecommerce.customer.domain.dto.UpdateCustomerCommand;
+import co.mptc.ecommerce.customer.domain.dto.UpdateCustomerResult;
+import co.mptc.ecommerce.customer.domain.entity.Customer;
+import co.mptc.ecommerce.customer.domain.event.CustomerUpdatedEvent;
+import co.mptc.ecommerce.customer.domain.exception.CustomerAlreadyExistsException;
 import co.mptc.ecommerce.customer.domain.exception.CustomerNotFoundException;
-import co.mptc.ecommerce.customer.domain.mapper.CustomerDomainMapper;
 import co.mptc.ecommerce.customer.domain.port.output.CustomerRepository;
+import co.mptc.ecommerce.customer.domain.service.CustomerDomainService;
 import co.mptc.ecommerce.order.domain.valueObject.CustomerId;
 import co.mptc.ecommerce.order.domain.valueObject.Email;
 import co.mptc.ecommerce.order.domain.valueObject.PhoneNumber;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class UpdateCustomerUseCase {
     private final CustomerDomainService customerDomainService;
-    private final CustomerDomainMapper customerDomainMapper;
     private final CustomerRepository customerRepository;
 
-    public CustomerResult execute(UpdateCustomerCommand command) {
+    @Transactional
+    public UpdateCustomerResult execute(UpdateCustomerCommand updateCustomerCommand) {
+        log.info("Execute UpdateCustomerUseCase : {}", updateCustomerCommand);
 
-        log.info("executing UpdateCustomerUseCase: {}", command);
+        Customer customer = customerRepository.findById(new CustomerId(updateCustomerCommand.customerId()))
+                .orElseThrow(() -> new CustomerNotFoundException(
+                        "Customer not found with id: " + updateCustomerCommand.customerId()));
 
-        //1. load customer
-        Customer customer = customerRepository.findCustomer(new CustomerId(command.customerId()))
-                .orElseThrow(() -> new CustomerNotFoundException("Could not find customer with id: " + command.customerId()));
+        Email newEmail = new Email(updateCustomerCommand.email());
+        PhoneNumber newPhoneNumber = updateCustomerCommand.phoneNumber() == null
+                ? null
+                : new PhoneNumber(updateCustomerCommand.phoneNumber());
 
-        //2. new email must not belong to another customer
-        Email newEmail = new Email(command.email());
-        if (!newEmail.equals(customer.getEmail()) && customerRepository.existsByEmail(newEmail)) {
-            throw new CustomerDomainException("Email already exists: " + command.email());
+        if (!newEmail.equals(customer.getEmail()) && customerRepository.existsByEmail(newEmail.value())) {
+            throw new CustomerAlreadyExistsException("Email already exists: " + newEmail.value());
         }
 
-        //3. domain logic (must be ACTIVE → change fields → validate)
-        customerDomainService.updateCustomer(customer,
-                command.familyName(),
-                command.givenName(),
+        // The domain service applies the new values to the aggregate and returns the event.
+        CustomerUpdatedEvent customerUpdatedEvent = customerDomainService.updateCustomer(
+                customer,
+                updateCustomerCommand.familyName(),
+                updateCustomerCommand.givenName(),
                 newEmail,
-                new PhoneNumber(command.phoneNumber()));
+                newPhoneNumber);
 
-        //4. save
-        Customer saveCustomer = customerRepository.saveCustomer(customer);
+        Customer savedCustomer = customerRepository.save(customer);
 
-        return customerDomainMapper.customerToCustomerResult(saveCustomer);
+        log.info("Customer updated with id: {} at {}",
+                savedCustomer.getId().value(), customerUpdatedEvent.getUpdatedAt());
+        return new UpdateCustomerResult(savedCustomer.getId().value());
     }
 }

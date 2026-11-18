@@ -20,7 +20,13 @@ spring:
       username: nacos
       password: Saran@1111
       server-addr: 127.0.0.1:8848
-#  security:
+    sentinel:
+      transport:
+        dashboard: localhost:8081
+        port: 8719
+      eager: true
+      web-context-unify: false
+  #  security:
 #    oauth2:
 #      resourceserver:
 #        jwt:

@@ -64,6 +64,11 @@
             </dependency>
             <dependency>
                 <groupId>test</groupId>
+                <artifactId>common-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>test</groupId>
                 <artifactId>common-persistence</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -104,6 +109,41 @@
             <dependency>
                 <groupId>test</groupId>
                 <artifactId>payment-domain-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>test</groupId>
+                <artifactId>customer-application-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>test</groupId>
+                <artifactId>customer-domain-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>test</groupId>
+                <artifactId>customer-service-restapi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>test</groupId>
+                <artifactId>customer-service-main</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>test</groupId>
+                <artifactId>customer-service-persistence</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>test</groupId>
+                <artifactId>customer-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>test</groupId>
+                <artifactId>customer-service-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

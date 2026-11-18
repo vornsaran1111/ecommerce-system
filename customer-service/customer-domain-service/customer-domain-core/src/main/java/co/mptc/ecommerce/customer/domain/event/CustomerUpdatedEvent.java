@@ -4,9 +4,8 @@ import co.mptc.ecommerce.customer.domain.entity.Customer;
 
 import java.time.ZonedDateTime;
 
-public class CustomerUpdatedEvent extends CustomerEvent{
+public class CustomerUpdatedEvent extends CustomerEvent {
     private final ZonedDateTime updatedAt;
-
 
     public CustomerUpdatedEvent(Customer customer, ZonedDateTime updatedAt) {
         super(customer);
